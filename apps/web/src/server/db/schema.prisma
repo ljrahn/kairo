@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Chart represents a chart definition and its data
+model Chart {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  
+  // Domain configuration
+  domainType  String   // "time" | "numeric" | "category" (MVP: only "time")
+  
+  // Chart data stored as JSON
+  // Structure: { points: Array<{ x: string|number, y: number }>, metadata: {...} }
+  data        String   // JSON string
+  
+  // If this is a derived chart, store the expression
+  expression  String?
+  
+  // Source charts for derived charts (if applicable)
+  sourceChartIds String? // JSON array of chart IDs
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([domainType])
+}

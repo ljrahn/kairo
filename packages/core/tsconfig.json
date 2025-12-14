@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "lib": ["ES2022"],
+    "baseUrl": ".",
+    "paths": {
+      "~/ast/*": ["./src/ast/*"],
+      "~/chart/*": ["./src/chart/*"],
+      "~/domain": ["./src/domain"],
+      "~/domain/*": ["./src/domain/*"],
+      "~/dsl/*": ["./src/dsl/*"],
+      "~/errors/*": ["./src/errors/*"],
+      "~/evaluation/*": ["./src/evaluation/*"],
+      "~/functions/*": ["./src/functions/*"],
+      "~/validation/*": ["./src/validation/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

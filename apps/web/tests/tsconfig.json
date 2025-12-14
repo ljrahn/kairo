@@ -1,0 +1,19 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "baseUrl": ".",
+    "types": ["vite/client"],
+    "paths": {
+      "@kairo/core": ["../../../packages/core/src"],
+      "@kairo/web": ["../src"],
+      "~/client/*": ["../src/client/*"],
+      "~/server/*": ["../src/server/*"],
+      "~/shared/*": ["../src/shared/*"]
+    }
+  },
+  "include": ["./**/*", "../src/**/*"],
+  "references": [{ "path": "../../../packages/core" }]
+}

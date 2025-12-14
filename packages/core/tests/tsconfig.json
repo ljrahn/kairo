@@ -1,0 +1,16 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "types": ["vitest/globals"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["../src/*"],
+
+      "~/test": ["./shared"],
+      "~/test/*": ["./shared/*"]
+    }
+  },
+  "include": ["./**/*", "../src/**/*"]
+}

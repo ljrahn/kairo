@@ -1,0 +1,40 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@kairo/core": ["../../packages/core/src"],
+
+      // client domains
+      "~/client/example/*": ["src/client/domains/example/*"],
+      "~/client/charts/*": ["src/client/domains/charts/*"],
+      "~/client/expressions/*": ["src/client/domains/expressions/*"],
+
+      // client shared
+      "~/client/hooks": ["src/client/shared/hooks"],
+      "~/client/hooks/*": ["src/client/shared/hooks/*"],
+      "~/client/lib": ["src/client/shared/lib"],
+      "~/client/lib/*": ["src/client/shared/lib/*"],
+      "~/client/ui": ["src/client/shared/ui"],
+      "~/client/ui/*": ["src/client/shared/ui/*"],
+
+      // server
+      "~/server/*": ["src/server/*"],
+
+      // server/client shared
+      "~/shared/*": ["src/shared/*"]
+    },
+    "types": ["vite/client"]
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".vinxi",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ],
+  "references": [{ "path": "../../packages/core" }]
+}
