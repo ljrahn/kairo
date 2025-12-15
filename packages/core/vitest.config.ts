@@ -16,6 +16,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      "~/test": resolve(__dirname, "./tests/shared"),
+      "~/test/*": resolve(__dirname, "./tests/shared/*"),
+
       "~": resolve(__dirname, "./src"),
       "~/*": resolve(__dirname, "./src/*"),
     },

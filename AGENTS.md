@@ -37,6 +37,8 @@
 - **Naming**: camelCase for variables/functions, PascalCase for types/classes, kebab-case for files
 - **Error handling**: Use structured error classes in `core/errors/`, serializable and user-facing
 - **Functions**: Pure functions in core, no side effects, deterministic evaluation
+- **Comments**: Don't overrwrite comments. It makes source code less readable. Just write comments around neccessary complex parts that need explanation.
+  also small docstrings for functions and classes.
 
 ## Project Vision
 

@@ -1,2 +1,2 @@
-export * from "./chart";
+export * from "./types";
 export * from "./value-type";

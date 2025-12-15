@@ -6,10 +6,10 @@
     "types": ["vitest/globals"],
     "baseUrl": ".",
     "paths": {
-      "~/*": ["../src/*"],
-
       "~/test": ["./shared"],
-      "~/test/*": ["./shared/*"]
+      "~/test/*": ["./shared/*"],
+
+      "~/*": ["../src/*"]
     }
   },
   "include": ["./**/*", "../src/**/*"]
