@@ -45,18 +45,14 @@ export const Or = createToken({
   longer_alt: Identifier,
 });
 
-export const Not = createToken({
-  name: "Not",
-  pattern: /not\b/,
-  longer_alt: Identifier,
-});
-
 export const Plus = createToken({ name: "Plus", pattern: /\+/ });
 export const Minus = createToken({ name: "Minus", pattern: /-/ });
 export const Multiply = createToken({ name: "Multiply", pattern: /\*/ });
 export const Divide = createToken({ name: "Divide", pattern: /\// });
+export const Bang = createToken({ name: "Bang", pattern: /!/ });
 
 export const GreaterThan = createToken({ name: "GreaterThan", pattern: />/ });
+
 export const GreaterThanEqual = createToken({
   name: "GreaterThanEqual",
   pattern: />=/,
@@ -72,6 +68,7 @@ export const Assign = createToken({ name: "Assign", pattern: /=/ });
 export const LParen = createToken({ name: "LParen", pattern: /\(/ });
 export const RParen = createToken({ name: "RParen", pattern: /\)/ });
 export const Comma = createToken({ name: "Comma", pattern: /,/ });
+export const Semicolon = createToken({ name: "Semicolon", pattern: /;/ });
 
 const allTokens: TokenType[] = [
   WhiteSpace,
@@ -81,7 +78,6 @@ const allTokens: TokenType[] = [
   StringLiteral,
   And,
   Or,
-  Not,
   GreaterThanEqual,
   LessThanEqual,
   Equal,
@@ -92,9 +88,11 @@ const allTokens: TokenType[] = [
   Minus,
   Multiply,
   Divide,
+  Bang,
   LParen,
   RParen,
   Comma,
+  Semicolon,
   Identifier,
 ];
 

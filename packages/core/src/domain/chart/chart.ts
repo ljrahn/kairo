@@ -2,7 +2,6 @@ import type {
   IDomain,
   IDomainType,
   IChart,
-  IChartMetadata,
   IPoint,
   ITimeSeriesChart,
   INumericChart,
@@ -23,31 +22,9 @@ export function createCategoryDomain(): IDomain<"category"> {
 
 export function createChart<T extends IDomainType>(
   domain: IDomain<T>,
-  points: ReadonlyArray<IPoint<T>>,
-  metadata: IChartMetadata
+  points: ReadonlyArray<IPoint<T>>
 ): IChart<T> {
-  return { domain, points, metadata };
-}
-
-export function createChartMetadata(
-  name: string,
-  opts?: {
-    description?: string;
-    source?: string;
-    yUnit?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-  }
-): IChartMetadata {
-  const now = new Date();
-  return {
-    name,
-    description: opts?.description,
-    source: opts?.source,
-    yUnit: opts?.yUnit,
-    createdAt: opts?.createdAt ?? now,
-    updatedAt: opts?.updatedAt ?? now,
-  };
+  return { domain, points };
 }
 
 export function isTimeSeriesChart(chart: IChart): chart is ITimeSeriesChart {

@@ -19,19 +19,9 @@ export interface IPoint<T extends IDomainType = IDomainType> {
   readonly y: number;
 }
 
-export interface IChartMetadata {
-  readonly name: string;
-  readonly description?: string;
-  readonly source?: string;
-  readonly yUnit?: string;
-  readonly createdAt?: Date;
-  readonly updatedAt?: Date;
-}
-
 export interface IChart<T extends IDomainType = IDomainType> {
   readonly domain: IDomain<T>;
   readonly points: ReadonlyArray<IPoint<T>>;
-  readonly metadata: IChartMetadata;
 }
 
 export type ITimeSeriesChart = IChart<"time">;

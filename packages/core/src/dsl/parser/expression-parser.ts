@@ -18,10 +18,11 @@ import {
   Equal,
   And,
   Or,
-  Not,
+  Bang,
   LParen,
   RParen,
   Comma,
+  Semicolon,
 } from "../grammer";
 
 export class ExpressionParser extends CstParser {
@@ -30,8 +31,36 @@ export class ExpressionParser extends CstParser {
     this.performSelfAnalysis();
   }
 
+  public program = this.RULE("program", () => {
+    this.SUBRULE(this.statement, { LABEL: "statement" });
+    this.MANY(() => {
+      this.CONSUME(Semicolon);
+      this.SUBRULE2(this.statement, { LABEL: "statement" });
+    });
+    this.OPTION(() => {
+      this.CONSUME2(Semicolon);
+    });
+  });
+
   public expression = this.RULE("expression", () => {
     this.SUBRULE(this.orExpression);
+  });
+
+  private statement = this.RULE("statement", () => {
+    this.OR([
+      { ALT: () => this.SUBRULE(this.assignmentStatement) },
+      { ALT: () => this.SUBRULE(this.expressionStatement) },
+    ]);
+  });
+
+  private assignmentStatement = this.RULE("assignmentStatement", () => {
+    this.CONSUME(Identifier, { LABEL: "name" });
+    this.CONSUME(Assign);
+    this.SUBRULE(this.expression, { LABEL: "value" });
+  });
+
+  private expressionStatement = this.RULE("expressionStatement", () => {
+    this.SUBRULE(this.expression, { LABEL: "expression" });
   });
 
   private orExpression = this.RULE("orExpression", () => {
@@ -93,11 +122,19 @@ export class ExpressionParser extends CstParser {
     this.OR([
       {
         ALT: () => {
-          this.CONSUME(Not);
-          this.SUBRULE(this.unaryExpression);
+          this.CONSUME(Bang);
+          this.SUBRULE(this.unaryExpression, { LABEL: "bangOperand" });
         },
       },
-      { ALT: () => this.SUBRULE(this.primaryExpression) },
+      {
+        ALT: () => {
+          this.CONSUME(Minus);
+          this.SUBRULE2(this.unaryExpression, { LABEL: "minusOperand" });
+        },
+      },
+      {
+        ALT: () => this.SUBRULE3(this.primaryExpression, { LABEL: "primary" }),
+      },
     ]);
   });
 

@@ -1,3 +1,4 @@
+import type { IAstLocation } from "../shared";
 import type {
   ILiteral,
   IDuration,
@@ -10,29 +11,46 @@ import type {
 /**
  * Creates a number literal AST node.
  */
-export function createNumberLiteral(value: number): INumberLiteral {
-  return { kind: "Literal", literalType: "number", value };
+export function createNumberLiteral(
+  value: number,
+  location: IAstLocation
+): INumberLiteral {
+  return { kind: "Literal", literalType: "number", value, location };
 }
 
 /**
  * Creates a boolean literal AST node.
  */
-export function createBooleanLiteral(value: boolean): IBooleanLiteral {
-  return { kind: "Literal", literalType: "boolean", value };
+export function createBooleanLiteral(
+  value: boolean,
+  location: IAstLocation
+): IBooleanLiteral {
+  return { kind: "Literal", literalType: "boolean", value, location };
 }
 
 /**
  * Creates a string literal AST node.
  */
-export function createStringLiteral(value: string): IStringLiteral {
-  return { kind: "Literal", literalType: "string", value };
+export function createStringLiteral(
+  value: string,
+  location: IAstLocation
+): IStringLiteral {
+  return { kind: "Literal", literalType: "string", value, location };
 }
 
 /**
  * Creates a duration literal AST node.
  */
-export function createDurationLiteral(duration: IDuration): IDurationLiteral {
-  return { kind: "Literal", literalType: "duration", value: duration };
+export function createDurationLiteral(
+  duration: IDuration,
+  location: IAstLocation
+): IDurationLiteral {
+  return {
+    kind: "Literal",
+    literalType: "duration",
+    value: duration,
+    location,
+  };
 }
 
 /**

@@ -1,2 +1,0 @@
-// Placeholder: Function registry
-export {};

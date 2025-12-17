@@ -3,7 +3,7 @@ import { tokenize } from "../grammer/grammar";
 import { ParseError } from "./parse-error";
 import { ExpressionParser } from "./expression-parser";
 import { createAstVisitor } from "./ast-visitor";
-import type { IParseResult } from "./types";
+import type { IProgramParseResult } from "./types";
 import { InvariantError } from "../../utils";
 
 const parserInstance = new ExpressionParser();
@@ -12,10 +12,10 @@ const astBuilder = createAstVisitor(
 );
 
 /**
- * Parses an expression string into an AST.
+ * Parses a program string into a Program AST.
  * Returns a Result containing either the AST or an array of ParseErrors.
  */
-export function parse(input: string): IParseResult {
+export function parseProgram(input: string): IProgramParseResult {
   const lexResult = tokenize(input);
 
   if (lexResult.errors.length > 0) {
@@ -35,7 +35,7 @@ export function parse(input: string): IParseResult {
   }
 
   parserInstance.input = lexResult.tokens;
-  const cst = parserInstance.expression();
+  const cst = parserInstance.program();
 
   if (parserInstance.errors.length > 0) {
     const errors = parserInstance.errors.map((parserError) => {

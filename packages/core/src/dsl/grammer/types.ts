@@ -1,4 +1,4 @@
-import type { IToken, ILexingError } from "chevrotain";
+import type { IToken } from "chevrotain";
 
 export interface ILexerResult {
   readonly tokens: IToken[];

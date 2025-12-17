@@ -1,4 +1,5 @@
 import type { IExpression } from "../expression";
+import type { IAstNodeBase } from "../shared";
 
 export type IArithmeticOperator = "+" | "-" | "*" | "/";
 export type IComparisonOperator = ">" | ">=" | "<" | "<=" | "==";
@@ -9,7 +10,7 @@ export type IBinaryOperator =
   | IComparisonOperator
   | IBooleanOperator;
 
-export interface IBinaryExpression {
+export interface IBinaryExpression extends IAstNodeBase {
   readonly kind: "BinaryExpression";
   readonly operator: IBinaryOperator;
   readonly left: IExpression;

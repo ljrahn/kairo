@@ -1,18 +1,25 @@
 import type { IToken } from "chevrotain";
+import { invariant } from "../../utils";
 import {
   createBooleanLiteral,
   createDuration,
   createDurationLiteral,
   createNumberLiteral,
   createStringLiteral,
-} from "../../ast/literal";
-import { createIdentifier } from "../../ast/identifier/identifier";
-import { createBinaryExpression } from "../../ast/binary-expression/binary-expression";
-import { createFunctionCall } from "../../ast/function-call/function-call";
-import { createNamedArgument } from "../../ast/named-argument";
-import type { IExpression } from "../../ast/expression";
-import type { IBinaryOperator } from "../../ast/binary-expression";
-import { invariant } from "../../utils";
+  createIdentifier,
+  createBinaryExpression,
+  createFunctionCall,
+  createNamedArgument,
+  createUnaryExpression,
+  createAssignmentStatement,
+  createExpressionStatement,
+  createProgram,
+  type IAstLocation,
+  type IExpression,
+  type IBinaryOperator,
+  type IProgram,
+  type IStatement,
+} from "../../ast";
 
 /**
  * Creates an AST visitor that converts CST (Concrete Syntax Tree) to AST.
@@ -29,6 +36,55 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
       this.validateVisitor();
     }
 
+    program(ctx: any): IProgram {
+      const statementNodes: any[] = ctx.statement ?? [];
+      const statements: IStatement[] = statementNodes.map((node) =>
+        this.visit(node)
+      );
+
+      let location: IAstLocation = {
+        line: 1,
+        column: 1,
+        offset: 0,
+        length: undefined,
+      };
+
+      if (statements.length > 0) {
+        location = statements
+          .map((stmt) => stmt.location)
+          .reduce((loc, next) => mergeLocations(loc, next));
+      }
+
+      return createProgram(statements, location);
+    }
+
+    statement(ctx: any): IStatement {
+      if (ctx.assignmentStatement) {
+        return this.visit(ctx.assignmentStatement);
+      }
+      if (ctx.expressionStatement) {
+        return this.visit(ctx.expressionStatement);
+      }
+
+      invariant(false, "Invalid statement CST shape", {
+        ctxKeys: Object.keys(ctx ?? {}),
+      });
+    }
+
+    assignmentStatement(ctx: any): IStatement {
+      const nameToken: IToken = ctx.name[0];
+      const expression: IExpression = this.visit(ctx.value);
+      const nameLocation = this.tokenToLocation(nameToken);
+      const location = mergeLocations(nameLocation, expression.location);
+      return createAssignmentStatement(nameToken.image, expression, location);
+    }
+
+    expressionStatement(ctx: any): IStatement {
+      const expression: IExpression = this.visit(ctx.expression);
+      const location = expression.location;
+      return createExpressionStatement(expression, location);
+    }
+
     expression(ctx: any): IExpression {
       return this.visit(ctx.orExpression);
     }
@@ -37,7 +93,9 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
       let result = this.visit(ctx.lhs);
       if (ctx.rhs) {
         ctx.rhs.forEach((rhsOperand: any) => {
-          result = createBinaryExpression("or", result, this.visit(rhsOperand));
+          const right = this.visit(rhsOperand);
+          const location = mergeLocations(result.location, right.location);
+          result = createBinaryExpression("or", result, right, location);
         });
       }
       return result;
@@ -47,11 +105,9 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
       let result = this.visit(ctx.lhs);
       if (ctx.rhs) {
         ctx.rhs.forEach((rhsOperand: any) => {
-          result = createBinaryExpression(
-            "and",
-            result,
-            this.visit(rhsOperand)
-          );
+          const right = this.visit(rhsOperand);
+          const location = mergeLocations(result.location, right.location);
+          result = createBinaryExpression("and", result, right, location);
         });
       }
       return result;
@@ -81,11 +137,9 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
         else if (ctx.LessThan) operator = "<";
         else if (ctx.Equal) operator = "==";
 
-        result = createBinaryExpression(
-          operator,
-          result,
-          this.visit(ctx.rhs[0])
-        );
+        const right = this.visit(ctx.rhs[0]);
+        const location = mergeLocations(result.location, right.location);
+        result = createBinaryExpression(operator, result, right, location);
       }
       return result;
     }
@@ -104,11 +158,9 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
           );
 
           const operator: IBinaryOperator = hasPlus ? "+" : "-";
-          result = createBinaryExpression(
-            operator,
-            result,
-            this.visit(rhsOperand)
-          );
+          const right = this.visit(rhsOperand);
+          const location = mergeLocations(result.location, right.location);
+          result = createBinaryExpression(operator, result, right, location);
         });
       }
       return result;
@@ -128,22 +180,36 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
           );
 
           const operator: IBinaryOperator = hasMultiply ? "*" : "/";
-          result = createBinaryExpression(
-            operator,
-            result,
-            this.visit(rhsOperand)
-          );
+          const right = this.visit(rhsOperand);
+          const location = mergeLocations(result.location, right.location);
+          result = createBinaryExpression(operator, result, right, location);
         });
       }
       return result;
     }
 
     unaryExpression(ctx: any): IExpression {
-      if (ctx.Not) {
-        const operand = this.visit(ctx.unaryExpression);
-        return createFunctionCall("not", [operand]);
+      if (ctx.Bang) {
+        const token: IToken = ctx.Bang[0];
+        const operand = this.visit(ctx.bangOperand[0]);
+        const operatorLocation = this.tokenToLocation(token);
+        const location = mergeLocations(operatorLocation, operand.location);
+        return createUnaryExpression("!", operand, location);
       }
-      return this.visit(ctx.primaryExpression);
+      if (ctx.Minus) {
+        const token: IToken = ctx.Minus[0];
+        const operand = this.visit(ctx.minusOperand[0]);
+        const operatorLocation = this.tokenToLocation(token);
+        const location = mergeLocations(operatorLocation, operand.location);
+        return createUnaryExpression("-", operand, location);
+      }
+      if (ctx.primary) {
+        return this.visit(ctx.primary[0]);
+      }
+
+      invariant(false, "Invalid unaryExpression CST shape", {
+        ctxKeys: Object.keys(ctx ?? {}),
+      });
     }
 
     primaryExpression(ctx: any): IExpression {
@@ -161,15 +227,18 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
     literal(ctx: any): IExpression {
       if (ctx.NumberLiteral) {
         const token: IToken = ctx.NumberLiteral[0];
-        return createNumberLiteral(parseFloat(token.image));
+        const location = this.tokenToLocation(token);
+        return createNumberLiteral(parseFloat(token.image), location);
       }
       if (ctx.BooleanLiteral) {
         const token: IToken = ctx.BooleanLiteral[0];
-        return createBooleanLiteral(token.image === "true");
+        const location = this.tokenToLocation(token);
+        return createBooleanLiteral(token.image === "true", location);
       }
       if (ctx.StringLiteral) {
         const token: IToken = ctx.StringLiteral[0];
-        return createStringLiteral(JSON.parse(token.image));
+        const location = this.tokenToLocation(token);
+        return createStringLiteral(JSON.parse(token.image), location);
       }
       if (ctx.DurationLiteral) {
         const token: IToken = ctx.DurationLiteral[0];
@@ -183,7 +252,8 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
 
         const value = parseInt(match[1], 10);
         const unit = match[2] as "ms" | "s" | "m" | "h" | "d" | "w";
-        return createDurationLiteral(createDuration(value, unit));
+        const location = this.tokenToLocation(token);
+        return createDurationLiteral(createDuration(value, unit), location);
       }
 
       invariant(false, "Invalid literal CST shape", {
@@ -193,7 +263,8 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
 
     identifier(ctx: any): IExpression {
       const token: IToken = ctx.Identifier[0];
-      return createIdentifier(token.image);
+      const location = this.tokenToLocation(token);
+      return createIdentifier(token.image, location);
     }
 
     functionCall(ctx: any): IExpression {
@@ -201,7 +272,13 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
       const args: IExpression[] = ctx.argumentList
         ? this.visit(ctx.argumentList)
         : [];
-      return createFunctionCall(nameToken.image, args);
+      const rParenTokens = ctx.RParen as IToken[] | undefined;
+      const endToken: IToken =
+        rParenTokens && rParenTokens.length > 0
+          ? rParenTokens[rParenTokens.length - 1]!
+          : nameToken;
+      const location = this.tokensToLocation([nameToken, endToken]);
+      return createFunctionCall(nameToken.image, args, location);
     }
 
     argumentList(ctx: any): IExpression[] {
@@ -216,13 +293,55 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
     namedArgument(ctx: any): IExpression {
       const nameToken: IToken = ctx.name[0];
       const valueExpr: IExpression = this.visit(ctx.value);
-      return createNamedArgument(nameToken.image, valueExpr);
+      const location = this.tokenToLocation(nameToken);
+      return createNamedArgument(nameToken.image, valueExpr, location);
     }
 
     parenthesizedExpression(ctx: any): IExpression {
       return this.visit(ctx.expression);
     }
+
+    tokenToLocation(token: IToken): IAstLocation {
+      const startOffset = token.startOffset ?? 0;
+      const endOffset = (token.endOffset ?? startOffset) + 1;
+
+      return {
+        line: token.startLine ?? 1,
+        column: token.startColumn ?? 1,
+        offset: startOffset,
+        length: endOffset - startOffset,
+      };
+    }
+
+    tokensToLocation(tokens: IToken[]): IAstLocation {
+      const first = tokens[0]!;
+      const last = tokens[tokens.length - 1] ?? first;
+      const startOffset = first.startOffset ?? 0;
+      const endOffset = (last.endOffset ?? startOffset) + 1;
+
+      return {
+        line: first.startLine ?? 1,
+        column: first.startColumn ?? 1,
+        offset: startOffset,
+        length: endOffset - startOffset,
+      };
+    }
   }
 
   return new AstVisitor();
+}
+
+function mergeLocations(a: IAstLocation, b: IAstLocation): IAstLocation {
+  const start = a.offset <= b.offset ? a : b;
+
+  const aEndOffset = a.length != null ? a.offset + a.length : a.offset;
+  const bEndOffset = b.length != null ? b.offset + b.length : b.offset;
+  const endOffset = Math.max(aEndOffset, bEndOffset);
+
+  return {
+    line: start.line,
+    column: start.column,
+    offset: start.offset,
+    length: endOffset - start.offset,
+  };
 }

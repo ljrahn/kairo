@@ -130,9 +130,10 @@ The DSL exists to:
 
 #### Operators
 
-- Arithmetic: `+ - * /`
+- Arithmetic: `+ - * /` (numbers and aligned charts)
 - Comparison: `> >= < <= ==`
-- Boolean: `and`, `or`, `not`
+- Boolean: `and`, `or`
+- Unary: `!`, `-`
 
 #### Literals
 
@@ -152,7 +153,8 @@ Time‑series only:
 - `moving_avg(chart, duration)`
 - `shift(chart, duration)`
 - `normalize(chart)`
-- `resample(chart, duration, method)`
+- `align(A, to=B, method="...")`
+- `resample(A, window=1h, method="...")`
 - `filter(chart, predicate)`
 
 #### Filter Semantics
@@ -307,8 +309,9 @@ exceptions.
 
 ### Phase 3: Chart Alignment
 
-- Explicit alignment functions
-- Safe cross-chart arithmetic
+- Explicit alignment helpers: `align(A, to=B, method="linear")`
+- Resampling helpers: `resample(A, window=1h, method="mean")`
+- Arithmetic on charts only when aligned/resampled; otherwise error prompting explicit alignment
 - Visual alignment previews
 
 ### Phase 4: UX Improvements

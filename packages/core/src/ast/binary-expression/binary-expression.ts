@@ -1,4 +1,5 @@
 import type { IExpression } from "../expression";
+import type { IAstLocation } from "../shared";
 import type {
   IBinaryExpression,
   IBinaryOperator,
@@ -13,13 +14,15 @@ import type {
 export function createBinaryExpression(
   operator: IBinaryOperator,
   left: IExpression,
-  right: IExpression
+  right: IExpression,
+  location: IAstLocation
 ): IBinaryExpression {
   return {
     kind: "BinaryExpression",
     operator,
     left,
     right,
+    location,
   };
 }
 

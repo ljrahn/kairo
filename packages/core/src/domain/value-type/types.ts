@@ -9,5 +9,6 @@ export type IValueType =
   | { readonly kind: "boolean" }
   | { readonly kind: "string" }
   | { readonly kind: "duration" }
+  | { readonly kind: "time" }
   | { readonly kind: "chart"; readonly domainType: IDomainType }
   | { readonly kind: "unknown" };

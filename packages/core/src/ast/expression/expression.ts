@@ -4,6 +4,7 @@ import type { IIdentifier } from "../identifier";
 import type { IBinaryExpression } from "../binary-expression";
 import type { IFunctionCall } from "../function-call";
 import type { INamedArgument } from "../named-argument";
+import type { IUnaryExpression } from "../unary-expression";
 
 export function isLiteral(expr: IExpression): expr is ILiteral {
   return expr.kind === "Literal";
@@ -25,4 +26,8 @@ export function isFunctionCall(expr: IExpression): expr is IFunctionCall {
 
 export function isNamedArgument(expr: IExpression): expr is INamedArgument {
   return expr.kind === "NamedArgument";
+}
+
+export function isUnaryExpression(expr: IExpression): expr is IUnaryExpression {
+  return expr.kind === "UnaryExpression";
 }

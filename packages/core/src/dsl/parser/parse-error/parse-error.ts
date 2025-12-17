@@ -1,15 +1,15 @@
 import { BaseError } from "../../../utils";
-import type { IErrorLocation } from "./types";
+import type { IAstLocation } from "../../../ast";
 
 export class ParseError extends BaseError {
   readonly code = "PARSE_ERROR";
-  readonly location?: IErrorLocation;
+  readonly location?: IAstLocation;
 
   constructor(
     message: string,
     options: {
       userMessage?: string;
-      location?: IErrorLocation;
+      location?: IAstLocation;
       cause?: unknown;
     } = {}
   ) {
@@ -20,7 +20,7 @@ export class ParseError extends BaseError {
   static atLocation(
     message: string,
     userMessage: string,
-    location: IErrorLocation
+    location: IAstLocation
   ): ParseError {
     return new ParseError(message, { userMessage, location });
   }

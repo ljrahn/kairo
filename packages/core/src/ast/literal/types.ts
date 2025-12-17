@@ -1,3 +1,5 @@
+import type { IAstNodeBase } from "../shared";
+
 export type ILiteralType = "number" | "boolean" | "string" | "duration";
 
 export interface IDuration {
@@ -31,25 +33,25 @@ export type ILiteralValue =
   | IStringLiteralValue
   | IDurationLiteralValue;
 
-export interface INumberLiteral {
+export interface INumberLiteral extends IAstNodeBase {
   readonly kind: "Literal";
   readonly literalType: "number";
   readonly value: number;
 }
 
-export interface IBooleanLiteral {
+export interface IBooleanLiteral extends IAstNodeBase {
   readonly kind: "Literal";
   readonly literalType: "boolean";
   readonly value: boolean;
 }
 
-export interface IStringLiteral {
+export interface IStringLiteral extends IAstNodeBase {
   readonly kind: "Literal";
   readonly literalType: "string";
   readonly value: string;
 }
 
-export interface IDurationLiteral {
+export interface IDurationLiteral extends IAstNodeBase {
   readonly kind: "Literal";
   readonly literalType: "duration";
   readonly value: IDuration;

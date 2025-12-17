@@ -4,3 +4,6 @@ export * from "./function-call";
 export * from "./identifier";
 export * from "./literal";
 export * from "./named-argument";
+export * from "./unary-expression";
+export * from "./program";
+export * from "./shared";
