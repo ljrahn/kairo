@@ -38,7 +38,7 @@ export function evaluateChartBinaryArithmetic(
     });
   }
 
-  return ok(createChart(left.domain, points, left.metadata));
+  return ok(createChart(left.domain, points));
 }
 
 export function evaluateChartScalarArithmetic(
@@ -52,7 +52,7 @@ export function evaluateChartScalarArithmetic(
     y: applyScalarOp(op, scalar, point.y, scalarOnLeft),
   }));
 
-  return createChart(chart.domain, points, chart.metadata);
+  return createChart(chart.domain, points);
 }
 
 function chartsAreAligned(left: IChart, right: IChart): boolean {

@@ -1,6 +1,6 @@
 import { err, ok, Result } from "neverthrow";
 import type { IProgram, IExpressionStatement } from "../../ast";
-import type { IChart, IValueType } from "../../domain";
+import type { IValueType } from "../../domain";
 import { TypeCheckError } from "./errors";
 import { getExpressionType } from "./type-check-expression";
 import type { ITypeCheckContext, ITypeCheckInputContext } from "./types";
