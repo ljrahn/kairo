@@ -41,7 +41,7 @@ The PoC must:
 
 - Support **time‑series charts only**
 - Allow users to:
-  - Define charts from imported data
+  - Work over charts supplied by the application (from imported data, DB, etc.)
   - Create derived charts using expressions
   - Apply a small set of core transformations
 - Have a minimal DSL for expressions
@@ -73,8 +73,8 @@ A chart is defined as:
   - `type`: `time | numeric | category`
 - **Points**
   - An ordered collection of `(x, y)` pairs
-- **Metadata**
-  - Name, description, source, units, etc.
+
+The core engine treats charts as pure semantic series: domain + points only; names, descriptions, units, and other metadata live at the application layer.
 
 Conceptually:
 
@@ -82,7 +82,6 @@ Conceptually:
 Chart {
   domain: Domain
   points: Point[]
-  metadata: ChartMetadata
 }
 
 Point {
@@ -220,9 +219,9 @@ error.
 
 ### 5. Execution Engine
 
-- Deterministic evaluation
+- Deterministic evaluation of whole programs
 - Stable results given the same inputs
-- No hidden state
+- No hidden state; all inputs are explicit
 
 ---
 
@@ -291,52 +290,10 @@ The DSL implementation should be:
 - Validated in multiple phases:
   1. Syntax validation
   2. Type checking
-  3. Domain compatibility
-  4. Function constraints
+  3. Function constraints
 
 Validation should produce **structured, user-facing errors**, not generic
 exceptions.
-
----
-
-## Longer-Term Roadmap (Post-MVP)
-
-### Phase 2: Domain Expansion
-
-- Numeric-domain charts
-- Categorical charts
-- Domain-specific function extensions
-
-### Phase 3: Chart Alignment
-
-- Explicit alignment helpers: `align(A, to=B, method="linear")`
-- Resampling helpers: `resample(A, window=1h, method="mean")`
-- Arithmetic on charts only when aligned/resampled; otherwise error prompting explicit alignment
-- Visual alignment previews
-
-### Phase 4: UX Improvements
-
-- Visual expression builder
-- Function suggestions
-- Inline previews of intermediate results
-
-### Phase 5: Collaboration & Sharing
-
-- Save and share workspaces
-- Versioned expressions
-- Auditability of derived charts
-
----
-
-## Success Criteria for the PoC
-
-The PoC is successful if:
-
-- A technical user can import data and derive new insights in minutes
-- Invalid operations are clearly rejected
-- Users trust the math
-- Iteration feels faster than spreadsheets
-- The system feels _purpose-built_, not generic
 
 ---
 

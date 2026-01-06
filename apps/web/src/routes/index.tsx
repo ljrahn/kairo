@@ -1,6 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ExampleComponentsLayout } from '~/client/example/layout'
+import { ChartWorkspaceLayout } from '~/client/charts/layouts'
 
 export const Route = createFileRoute('/')({
-  component: ExampleComponentsLayout,
+  component: RootRouteComponent,
 })
+
+function RootRouteComponent() {
+  return <ChartWorkspaceLayout />
+}

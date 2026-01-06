@@ -2,10 +2,6 @@
 
 A chart-first calculation tool that lets users perform arithmetic, transformations, and aggregations directly on charts to create new derived charts.
 
-## Project Status
-
-This is a **greenfield project** currently in the planning and setup phase. The project structure and configurations are in place, but implementation has not yet begun.
-
 ## Project Structure
 
 This is a monorepo built with pnpm workspaces containing:
@@ -20,7 +16,7 @@ This is a monorepo built with pnpm workspaces containing:
 - **Framework**: TanStack Start + React + TanStack Router + TanStack Query
 - **UI**: Tailwind CSS + shadcn/ui + Recharts
 - **Editor**: CodeMirror 6
-- **Parser**: Chevrotain
+- **DSL Parser**: Chevrotain
 - **Database**: SQLite + Prisma ORM
 - **Testing**: Vitest
 
@@ -67,7 +63,6 @@ pnpm format
 
 ## Documentation
 
-- [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - Detailed architecture and folder structure
 - [ROADMAP.md](./ROADMAP.md) - Product vision, principles, and roadmap
 - [AGENTS.md](./AGENTS.md) - Guidelines for AI agents working on this project
 

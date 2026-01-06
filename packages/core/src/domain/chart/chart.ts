@@ -22,7 +22,7 @@ export function createCategoryDomain(): IDomain<"category"> {
 
 export function createChart<T extends IDomainType>(
   domain: IDomain<T>,
-  points: ReadonlyArray<IPoint<T>>
+  points: Array<IPoint<T>>
 ): IChart<T> {
   return { domain, points };
 }

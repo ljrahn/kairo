@@ -83,7 +83,10 @@ function defaultEvaluateArgs(
   const argValues: IRuntimeValue[] = [];
 
   for (const argExpr of expr.args) {
-    const argValueR = evalExpr(argExpr, context);
+    const valueExpr =
+      argExpr.kind === "NamedArgument" ? argExpr.value : argExpr;
+
+    const argValueR = evalExpr(valueExpr, context);
     if (argValueR.isErr()) {
       return err<IRuntimeValue[], EvaluationError>(argValueR.error);
     }

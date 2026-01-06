@@ -1,6 +1,5 @@
 import { err, ok } from "neverthrow";
 import { parseProgram } from "../dsl";
-import type { IExpressionStatement } from "../ast";
 import {
   typeCheckProgram,
   checkProgramFunctionConstraints,
@@ -51,10 +50,7 @@ export function runProgram(
   };
 
   for (const statement of program.statements) {
-    const expression =
-      statement.kind === "AssignmentStatement"
-        ? statement.expression
-        : (statement as IExpressionStatement).expression;
+    const expression = statement.expression;
 
     const evalR = evaluateExpressionAst(expression, runtimeContext);
 

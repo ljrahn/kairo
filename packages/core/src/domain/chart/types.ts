@@ -21,7 +21,7 @@ export interface IPoint<T extends IDomainType = IDomainType> {
 
 export interface IChart<T extends IDomainType = IDomainType> {
   readonly domain: IDomain<T>;
-  readonly points: ReadonlyArray<IPoint<T>>;
+  readonly points: Array<IPoint<T>>;
 }
 
 export type ITimeSeriesChart = IChart<"time">;

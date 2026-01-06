@@ -146,45 +146,85 @@ export function createAstVisitor(baseCstVisitorConstructor: any) {
 
     additionExpression(ctx: any): IExpression {
       let result = this.visit(ctx.lhs);
-      if (ctx.rhs) {
-        ctx.rhs.forEach((rhsOperand: any, idx: number) => {
-          const hasPlus = !!(ctx.Plus && ctx.Plus[idx]);
-          const hasMinus = !!(ctx.Minus && ctx.Minus[idx]);
+      const rhsOperands = ctx.rhs ?? [];
+
+      if (rhsOperands.length > 0) {
+        const operatorTokens: IToken[] = [
+          ...(ctx.Plus ?? []),
+          ...(ctx.Minus ?? []),
+        ].sort(
+          (a: IToken, b: IToken) => (a.startOffset ?? 0) - (b.startOffset ?? 0)
+        );
+
+        invariant(
+          operatorTokens.length === rhsOperands.length,
+          "additionExpression CST invariant violated",
+          {
+            rhsLength: rhsOperands.length,
+            plusCount: ctx.Plus?.length ?? 0,
+            minusCount: ctx.Minus?.length ?? 0,
+          }
+        );
+
+        rhsOperands.forEach((rhsOperand: any, idx: number) => {
+          const operatorToken = operatorTokens[idx]!;
 
           invariant(
-            hasPlus !== hasMinus,
+            operatorToken.image === "+" || operatorToken.image === "-",
             "additionExpression CST invariant violated",
-            { index: idx, hasPlus, hasMinus }
+            { index: idx, image: operatorToken.image }
           );
 
-          const operator: IBinaryOperator = hasPlus ? "+" : "-";
+          const operator: IBinaryOperator =
+            operatorToken.image === "+" ? "+" : "-";
           const right = this.visit(rhsOperand);
           const location = mergeLocations(result.location, right.location);
           result = createBinaryExpression(operator, result, right, location);
         });
       }
+
       return result;
     }
 
     multiplicationExpression(ctx: any): IExpression {
       let result = this.visit(ctx.lhs);
-      if (ctx.rhs) {
-        ctx.rhs.forEach((rhsOperand: any, idx: number) => {
-          const hasMultiply = !!(ctx.Multiply && ctx.Multiply[idx]);
-          const hasDivide = !!(ctx.Divide && ctx.Divide[idx]);
+      const rhsOperands = ctx.rhs ?? [];
+
+      if (rhsOperands.length > 0) {
+        const operatorTokens: IToken[] = [
+          ...(ctx.Multiply ?? []),
+          ...(ctx.Divide ?? []),
+        ].sort(
+          (a: IToken, b: IToken) => (a.startOffset ?? 0) - (b.startOffset ?? 0)
+        );
+
+        invariant(
+          operatorTokens.length === rhsOperands.length,
+          "multiplicationExpression CST invariant violated",
+          {
+            rhsLength: rhsOperands.length,
+            multiplyCount: ctx.Multiply?.length ?? 0,
+            divideCount: ctx.Divide?.length ?? 0,
+          }
+        );
+
+        rhsOperands.forEach((rhsOperand: any, idx: number) => {
+          const operatorToken = operatorTokens[idx]!;
 
           invariant(
-            hasMultiply !== hasDivide,
+            operatorToken.image === "*" || operatorToken.image === "/",
             "multiplicationExpression CST invariant violated",
-            { index: idx, hasMultiply, hasDivide }
+            { index: idx, image: operatorToken.image }
           );
 
-          const operator: IBinaryOperator = hasMultiply ? "*" : "/";
+          const operator: IBinaryOperator =
+            operatorToken.image === "*" ? "*" : "/";
           const right = this.visit(rhsOperand);
           const location = mergeLocations(result.location, right.location);
           result = createBinaryExpression(operator, result, right, location);
         });
       }
+
       return result;
     }
 
